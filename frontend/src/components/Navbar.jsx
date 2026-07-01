@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { logout } from "../redux/slices/authSlice";
+import LanguageSwitcher from "./LanguageSwitcher";
 import {
   FaLeaf,
   FaShoppingCart,
@@ -14,6 +16,7 @@ import {
 } from "react-icons/fa";
 
 const Navbar = () => {
+  const { t } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
@@ -50,29 +53,29 @@ const Navbar = () => {
               to="/"
               className="text-gray-700 hover:text-green-500 transition-colors"
             >
-              Home
+              {t("home", "Home")}
             </Link>
             <Link
               to="/products"
               className="text-gray-700 hover:text-green-500 transition-colors"
             >
-              Products
+              {t("products", "Products")}
             </Link>
             <Link
               to="/farmers"
               className="text-gray-700 hover:text-green-500 transition-colors"
             >
-              Farmers
+              {t("farmers", "Farmers")}
             </Link>
             <Link
               to="/about"
               className="text-gray-700 hover:text-green-500 transition-colors"
             >
-              About
+              {t("about", "About")}
             </Link>
 
             {isAuthenticated && user?.role === "consumer" && (
-            <Link to="/checkout" className="relative">
+              <Link to="/checkout" className="relative">
                 <FaShoppingCart className="text-gray-700 hover:text-green-500 text-xl transition-colors" />
                 {cartItems.length > 0 && (
                   <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
@@ -81,6 +84,9 @@ const Navbar = () => {
                 )}
               </Link>
             )}
+
+            {/* Language Switcher */}
+            <LanguageSwitcher />
 
             {isAuthenticated ? (
               <div className="relative">
@@ -102,7 +108,7 @@ const Navbar = () => {
                         className="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-500"
                         onClick={() => setIsProfileOpen(false)}
                       >
-                        Admin Dashboard
+                        {t("admin_dashboard", "Admin Dashboard")}
                       </Link>
                     )}
 
@@ -112,7 +118,7 @@ const Navbar = () => {
                         className="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-500"
                         onClick={() => setIsProfileOpen(false)}
                       >
-                        Farmer Dashboard
+                        {t("farmer_dashboard", "Farmer Dashboard")}
                       </Link>
                     )}
 
@@ -123,7 +129,7 @@ const Navbar = () => {
                           className="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-500"
                           onClick={() => setIsProfileOpen(false)}
                         >
-                          Profile
+                          {t("profile", "Profile")}
                         </Link>
 
                         <Link
@@ -131,7 +137,7 @@ const Navbar = () => {
                           className="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-500"
                           onClick={() => setIsProfileOpen(false)}
                         >
-                          Orders
+                          {t("orders", "Orders")}
                         </Link>
                       </>
                     )}
@@ -141,7 +147,7 @@ const Navbar = () => {
                       className="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-500"
                       onClick={() => setIsProfileOpen(false)}
                     >
-                      Messages
+                      {t("messages", "Messages")}
                     </Link>
 
                     <button
@@ -153,7 +159,7 @@ const Navbar = () => {
                     >
                       <div className="flex items-center space-x-2">
                         <FaSignOutAlt />
-                        <span>Logout</span>
+                        <span>{t("logout", "Logout")}</span>
                       </div>
                     </button>
                   </div>
@@ -165,20 +171,23 @@ const Navbar = () => {
                   to="/login"
                   className="text-gray-700 hover:text-green-500 transition-colors"
                 >
-                  Login
+                  {t("login", "Login")}
                 </Link>
                 <Link
                   to="/register"
                   className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
                 >
-                  Register
+                  {t("register", "Register")}
                 </Link>
               </div>
             )}
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center space-x-4">
+            {/* Language Switcher for mobile next to menu button */}
+            <LanguageSwitcher />
+            
             <button
               onClick={toggleMenu}
               className="text-gray-700 hover:text-green-500 focus:outline-none"
@@ -201,28 +210,28 @@ const Navbar = () => {
                 className="text-gray-700 hover:text-green-500 transition-colors"
                 onClick={toggleMenu}
               >
-                Home
+                {t("home", "Home")}
               </Link>
               <Link
                 to="/products"
                 className="text-gray-700 hover:text-green-500 transition-colors"
                 onClick={toggleMenu}
               >
-                Products
+                {t("products", "Products")}
               </Link>
               <Link
                 to="/farmers"
                 className="text-gray-700 hover:text-green-500 transition-colors"
                 onClick={toggleMenu}
               >
-                Farmers
+                {t("farmers", "Farmers")}
               </Link>
               <Link
                 to="/about"
                 className="text-gray-700 hover:text-green-500 transition-colors"
                 onClick={toggleMenu}
               >
-                About
+                {t("about", "About")}
               </Link>
 
               {isAuthenticated && user?.role === "consumer" && (
@@ -232,7 +241,7 @@ const Navbar = () => {
                   onClick={toggleMenu}
                 >
                   <FaShoppingCart />
-                  <span>Cart ({cartItems.length})</span>
+                  <span>{t("cart", "Cart")} ({cartItems.length})</span>
                 </Link>
               )}
               {isAuthenticated ? (
@@ -243,7 +252,7 @@ const Navbar = () => {
                       className="text-gray-700 hover:text-green-500 transition-colors"
                       onClick={toggleMenu}
                     >
-                      Admin Dashboard
+                      {t("admin_dashboard", "Admin Dashboard")}
                     </Link>
                   )}
 
@@ -253,7 +262,7 @@ const Navbar = () => {
                       className="text-gray-700 hover:text-green-500 transition-colors"
                       onClick={toggleMenu}
                     >
-                      Farmer Dashboard
+                      {t("farmer_dashboard", "Farmer Dashboard")}
                     </Link>
                   )}
 
@@ -262,7 +271,7 @@ const Navbar = () => {
                     className="text-gray-700 hover:text-green-500 transition-colors"
                     onClick={toggleMenu}
                   >
-                    Profile
+                    {t("profile", "Profile")}
                   </Link>
 
                   <Link
@@ -270,7 +279,7 @@ const Navbar = () => {
                     className="text-gray-700 hover:text-green-500 transition-colors"
                     onClick={toggleMenu}
                   >
-                    Orders
+                    {t("orders", "Orders")}
                   </Link>
 
                   <Link
@@ -278,7 +287,7 @@ const Navbar = () => {
                     className="text-gray-700 hover:text-green-500 transition-colors"
                     onClick={toggleMenu}
                   >
-                    Messages
+                    {t("messages", "Messages")}
                   </Link>
 
                   <button
@@ -289,7 +298,7 @@ const Navbar = () => {
                     className="flex items-center space-x-2 text-gray-700 hover:text-green-500 transition-colors"
                   >
                     <FaSignOutAlt />
-                    <span>Logout</span>
+                    <span>{t("logout", "Logout")}</span>
                   </button>
                 </>
               ) : (
@@ -299,14 +308,14 @@ const Navbar = () => {
                     className="text-gray-700 hover:text-green-500 transition-colors"
                     onClick={toggleMenu}
                   >
-                    Login
+                    {t("login", "Login")}
                   </Link>
                   <Link
                     to="/register"
                     className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors text-center"
                     onClick={toggleMenu}
                   >
-                    Register
+                    {t("register", "Register")}
                   </Link>
                 </div>
               )}

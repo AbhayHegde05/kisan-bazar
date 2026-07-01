@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { getProducts } from "../redux/slices/productSlice";
 import { getAllFarmers } from "../redux/slices/farmerSlice";
 import { getCategories } from "../redux/slices/categorySlice";
@@ -13,6 +14,7 @@ import { FaLeaf, FaUsers, FaShoppingBasket, FaHandshake } from "react-icons/fa";
 
 const HomePage = () => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   // Safe defaults so .length never crashes
   const { products = [], loading: productLoading } =
@@ -46,31 +48,28 @@ const HomePage = () => {
           <div className="max-w-2xl mx-auto text-center px-4">
             <div className="inline-block bg-green-100 text-green-800 text-xs font-semibold rounded-full px-3 py-1 mb-6 shadow-sm border border-green-200">
               <span className="uppercase tracking-wider">
-                KisanBazar Announcement
+                {t("announcement", "KisanBazar Announcement")}
               </span>
             </div>
             <h1 className="text-4xl md:text-5xl font-extrabold mb-6 text-gray-900">
-              Connect Directly with
-              <br className="hidden md:block" /> Local Farmers
+              {t("hero_title_part1", "Connect Directly with")}
+              <br className="hidden md:block" /> {t("hero_title_part2", "Local Farmers")}
             </h1>
             <p className="text-base md:text-lg text-gray-600 mb-10">
-              Get fresh, locally grown produce delivered straight from farm to
-              your table.
-              <br className="hidden md:block" />
-              Support local agriculture and enjoy seasonal variety.
+              {t("hero_subtitle", "Get fresh, locally grown produce delivered straight from farm to your table. Support local agriculture and enjoy seasonal variety.")}
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Link
                 to="/products"
                 className="btn btn-primary px-8 py-3 text-lg rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
               >
-                Shop Now
+                {t("shop_now", "Shop Now")}
               </Link>
               <Link
                 to="/farmers"
                 className="btn btn-outline px-8 py-3 text-lg rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
               >
-                Meet Our Farmers
+                {t("meet_farmers", "Meet Our Farmers")}
               </Link>
             </div>
           </div>
@@ -80,7 +79,7 @@ const HomePage = () => {
       <section className="py-24 bg-gradient-to-b from-gray-50 to-white">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-16">
-            Why Choose KisanBazar?
+            {t("why_choose", "Why Choose KisanBazar?")}
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
@@ -88,9 +87,9 @@ const HomePage = () => {
               <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <FaLeaf className="text-green-500 text-3xl" />
               </div>
-              <h3 className="text-xl font-semibold mb-4">Fresh & Local</h3>
+              <h3 className="text-xl font-semibold mb-4">{t("fresh_local", "Fresh & Local")}</h3>
               <p className="text-gray-600">
-                Get the freshest produce harvested directly from local farms.
+                {t("fresh_local_desc", "Get the freshest produce harvested directly from local farms.")}
               </p>
             </div>
 
@@ -99,11 +98,10 @@ const HomePage = () => {
                 <FaUsers className="text-green-500 text-3xl" />
               </div>
               <h3 className="text-xl font-semibold mb-4">
-                Support Local Farmers
+                {t("support_farmers", "Support Local Farmers")}
               </h3>
               <p className="text-gray-600">
-                Help sustain local agriculture and support farming families in
-                your community.
+                {t("support_farmers_desc", "Help sustain local agriculture and support farming families in your community.")}
               </p>
             </div>
 
@@ -111,10 +109,9 @@ const HomePage = () => {
               <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <FaShoppingBasket className="text-green-500 text-3xl" />
               </div>
-              <h3 className="text-xl font-semibold mb-4">Seasonal Variety</h3>
+              <h3 className="text-xl font-semibold mb-4">{t("seasonal_variety", "Seasonal Variety")}</h3>
               <p className="text-gray-600">
-                Discover a wide variety of seasonal fruits, vegetables, and farm
-                products.
+                {t("seasonal_variety_desc", "Discover a wide variety of seasonal fruits, vegetables, and farm products.")}
               </p>
             </div>
 
@@ -123,11 +120,10 @@ const HomePage = () => {
                 <FaHandshake className="text-green-500 text-3xl" />
               </div>
               <h3 className="text-xl font-semibold mb-4">
-                Direct Communication
+                {t("direct_comm", "Direct Communication")}
               </h3>
               <p className="text-gray-600">
-                Connect directly with farmers to learn about their growing
-                practices.
+                {t("direct_comm_desc", "Connect directly with farmers to learn about their growing practices.")}
               </p>
             </div>
           </div>
@@ -139,13 +135,13 @@ const HomePage = () => {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-12">
             <h2 className="text-4xl font-bold text-gray-800">
-              Featured Products
+              {t("featured_products", "Featured Products")}
             </h2>
             <Link
               to="/products"
               className="text-green-600 hover:text-green-800 font-medium text-lg transition-all duration-300"
             >
-              View All Products →
+              {t("view_all_products", "View All Products →")}
             </Link>
           </div>
 
@@ -161,16 +157,16 @@ const HomePage = () => {
             ) : (
               <div className="col-span-full text-center py-12">
                 <h3 className="text-2xl font-semibold text-gray-700 mb-4">
-                  No Featured Products Available
+                  {t("no_featured_products", "No Featured Products Available")}
                 </h3>
                 <p className="text-gray-500 mb-6">
-                  Check back soon for new products!
+                  {t("check_back_soon", "Check back soon for new products!")}
                 </p>
                 <Link
                   to="/products"
                   className="text-green-600 hover:text-green-800 font-medium"
                 >
-                  Browse All Products →
+                  {t("browse_all_products", "Browse All Products →")}
                 </Link>
               </div>
             )}
@@ -182,7 +178,7 @@ const HomePage = () => {
       <section className="py-24 bg-gradient-to-b from-white to-gray-50">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl font-bold text-center text-gray-800 mb-16">
-            Browse By Category
+            {t("browse_category", "Browse By Category")}
           </h2>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
@@ -193,10 +189,10 @@ const HomePage = () => {
             ) : !Array.isArray(categories) || categories.length === 0 ? (
               <div className="col-span-full text-center py-12">
                 <h3 className="text-2xl font-semibold text-gray-700 mb-4">
-                  Categories Coming Soon
+                  {t("categories_coming_soon", "Categories Coming Soon")}
                 </h3>
                 <p className="text-gray-500">
-                  We're working on organizing our products into categories.
+                  {t("categories_coming_soon_desc", "We're working on organizing our products into categories.")}
                 </p>
               </div>
             ) : (
@@ -225,12 +221,12 @@ const HomePage = () => {
       <section className="py-24">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-800">Our Farmers</h2>
+            <h2 className="text-4xl font-bold text-gray-800">{t("our_farmers", "Our Farmers")}</h2>
             <Link
               to="/farmers"
               className="text-green-600 hover:text-green-800 font-medium text-lg transition-all duration-300"
             >
-              View All Farmers →
+              {t("view_all_farmers", "View All Farmers →")}
             </Link>
           </div>
 
@@ -246,16 +242,16 @@ const HomePage = () => {
             ) : (
               <div className="col-span-full text-center py-12">
                 <h3 className="text-2xl font-semibold text-gray-700 mb-4">
-                  No Farmers Available Yet
+                  {t("no_farmers_yet", "No Farmers Available Yet")}
                 </h3>
                 <p className="text-gray-500 mb-6">
-                  We're working on connecting with local farmers.
+                  {t("no_farmers_yet_desc", "We're working on connecting with local farmers.")}
                 </p>
                 <Link
                   to="/farmers"
                   className="text-green-600 hover:text-green-800 font-medium"
                 >
-                  Check Back Later →
+                  {t("check_back_later", "Check Back Later →")}
                 </Link>
               </div>
             )}
@@ -266,23 +262,22 @@ const HomePage = () => {
       {/* CTA */}
       <section className="py-24 bg-gradient-to-r from-green-500 to-green-600 text-white">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-8">Ready to Get Started?</h2>
+          <h2 className="text-4xl font-bold mb-8">{t("ready_get_started", "Ready to Get Started?")}</h2>
           <p className="text-xl mb-12 max-w-2xl mx-auto">
-            Join our community today and start enjoying fresh, local produce
-            while supporting farmers in your area.
+            {t("ready_get_started_desc", "Join our community today and start enjoying fresh, local produce while supporting farmers in your area.")}
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-6">
             <Link
               to="/register"
               className="btn bg-white text-green-600 hover:bg-gray-100 px-8 py-3 rounded-lg font-bold text-lg"
             >
-              Sign Up Now
+              {t("sign_up_now", "Sign Up Now")}
             </Link>
             <Link
               to="/about"
               className="btn border-2 border-white text-white hover:bg-white hover:text-green-600 px-8 py-3 rounded-lg font-bold text-lg"
             >
-              Learn More
+              {t("learn_more", "Learn More")}
             </Link>
           </div>
         </div>

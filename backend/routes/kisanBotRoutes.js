@@ -1,15 +1,14 @@
 const express = require('express');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const Groq = require('groq-sdk');
 const dotenv = require('dotenv');
 
 dotenv.config();
 
 const router = express.Router();
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
-const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+const groq = new Groq({ apiKey: GROQ_API_KEY });
 
 router.post('/', async (req, res) => {
     try {
@@ -19,33 +18,34 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ message: "Message is required" });
         }
 
-        if (!GEMINI_API_KEY || GEMINI_API_KEY === 'YOUR_KEY_HERE') {
-            return res.status(500).json({ message: "Gemini API Key is not configured." });
+        if (!GROQ_API_KEY || GROQ_API_KEY === 'YOUR_KEY_HERE') {
+            return res.status(500).json({ message: "Groq API Key is not configured." });
         }
 
-        const systemPrompt = `You are 'Kisan Mitra', an expert farming assistant. The user has selected ${selectedLanguage || 'English'}. Answer their question helpfuly and strictly in ${selectedLanguage || 'English'} only. Keep the response concise and easy to understand for a farmer.`;
+        const systemPrompt = `You are 'Kisan Mitra', an expert farming assistant for Indian farmers. The user has selected ${selectedLanguage || 'English'} as their language. Answer their question helpfully and strictly in ${selectedLanguage || 'English'} only. Keep the response concise and easy to understand for a farmer. Focus on practical farming advice relevant to India.`;
 
-        const chat = model.startChat({
-            history: [
+        const chatCompletion = await groq.chat.completions.create({
+            messages: [
+                {
+                    role: "system",
+                    content: systemPrompt,
+                },
                 {
                     role: "user",
-                    parts: [{ text: systemPrompt }],
-                },
-                {
-                    role: "model",
-                    parts: [{ text: `Namaste! I am Kisan Mitra. How can I help you today in ${selectedLanguage || 'English'}?` }],
+                    content: message,
                 },
             ],
+            model: "llama-3.3-70b-versatile",
+            temperature: 0.7,
+            max_tokens: 512,
         });
 
-        const result = await chat.sendMessage(message);
-        const response = await result.response;
-        const text = response.text();
+        const reply = chatCompletion.choices[0]?.message?.content || "Sorry, I could not generate a response.";
 
-        res.json({ reply: text });
+        res.json({ reply });
 
     } catch (error) {
-        console.error("Gemini API Error:", error);
+        console.error("Groq API Error:", error);
         res.status(500).json({
             message: error.message || "Failed to fetch response from Kisan Bot.",
             details: error.toString()
