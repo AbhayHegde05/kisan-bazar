@@ -1,7 +1,9 @@
+const dotenv = require("dotenv");
+dotenv.config();
+
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const dotenv = require("dotenv");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const productRoutes = require("./routes/productRoutes");
@@ -9,10 +11,9 @@ const orderRoutes = require("./routes/orderRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const kisanBotRoutes = require("./routes/kisanBotRoutes");
+const translateRoutes = require("./routes/translateRoutes");
 const connectDB = require("./db/connection");
 
-// Load environment variables
-dotenv.config();
 connectDB();
 
 const app = express();
@@ -34,6 +35,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/kisan-bot", kisanBotRoutes);
+app.use("/api/translate", translateRoutes);
 app.use("/api/debug", require("./routes/errorRoutes"));
 
 // Global error handling

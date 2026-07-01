@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 const KisanBot = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -9,8 +10,27 @@ const KisanBot = () => {
     const [loading, setLoading] = useState(false);
     const [language, setLanguage] = useState('English');
     const messagesEndRef = useRef(null);
+    const { i18n } = useTranslation();
 
     const API_URL = import.meta.env.VITE_API_URL;
+
+    // Sync chatbot language with global site language
+    useEffect(() => {
+        const langMap = {
+            'en': 'English',
+            'hi': 'Hindi',
+            'kn': 'Kannada',
+            'ta': 'Tamil',
+            'te': 'Telugu'
+        };
+        const shortLang = i18n.language?.substring(0, 2);
+        const mappedLang = langMap[shortLang];
+        if (mappedLang) {
+            setLanguage(mappedLang);
+        } else if (i18n.language && i18n.language.startsWith('en')) {
+            setLanguage('English');
+        }
+    }, [i18n.language]);
 
     const languages = [
         "English",
@@ -21,7 +41,14 @@ const KisanBot = () => {
     ];
 
     const speak = (text, lang) => {
-        if ('speechSynthesis' in window) {
+        if (!('speechSynthesis' in window)) {
+            toast.warning("Text-to-Speech not supported in this browser.");
+            return;
+        }
+
+        try {
+            window.speechSynthesis.cancel();
+
             const utterance = new SpeechSynthesisUtterance(text);
 
             // Map languages to BCP 47 tags roughly
@@ -30,14 +57,26 @@ const KisanBot = () => {
                 "Hindi": "hi-IN",
                 "Kannada": "kn-IN",
                 "Tamil": "ta-IN",
-                "Telugu": "te-IN"
+                "Telugu": "te-IN",
             };
 
-            utterance.lang = langMap[lang] || 'en-US';
-            window.speechSynthesis.cancel(); // Stop previous speech
+            const targetLang = langMap[lang] || 'en-US';
+            utterance.lang = targetLang;
+
+            // Try to pick the best available voice for that language.
+            // Some browsers need voices to be loaded asynchronously.
+            const voices = window.speechSynthesis.getVoices?.() || [];
+            const voice = voices.find(v => v.lang === targetLang)
+                || voices.find(v => v.lang?.toLowerCase().startsWith(targetLang.split('-')[0]?.toLowerCase()))
+                || voices.find(v => v.lang?.toLowerCase().includes(targetLang.toLowerCase()))
+                || null;
+
+            if (voice) utterance.voice = voice;
+
             window.speechSynthesis.speak(utterance);
-        } else {
-            toast.warning("Text-to-Speech not supported in this browser.");
+        } catch (e) {
+            console.error(e);
+            toast.warning("Unable to play voice on this browser.");
         }
     };
 
@@ -63,7 +102,9 @@ const KisanBot = () => {
         try {
             const { data } = await axios.post(`${API_URL}/kisan-bot`, {
                 message: input,
-                selectedLanguage: language
+                selectedLanguage: language,
+                // Used by backend to enforce correct troubleshooting + calculations.
+                promptMode: 'app-help',
             });
 
             const botMessage = { text: data.reply, sender: 'bot' };
@@ -120,8 +161,8 @@ const KisanBot = () => {
                         </select>
                     </div>
 
-                    {/* Messages Area */}
-                    <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+                    {/* Messages Area – translator skips this since bot replies are already in the chosen language */}
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50" data-no-translate>
                         {messages.length === 0 && (
                             <div className="text-center text-gray-500 mt-10">
                                 <p>👋 Namaste!</p>

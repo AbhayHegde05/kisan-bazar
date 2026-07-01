@@ -1,58 +1,67 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FaLeaf, FaLanguage } from 'react-icons/fa';
+import { FaLanguage } from 'react-icons/fa';
+import { useTranslationContext } from '../context/TranslationContext';
+
+const LANGUAGES = [
+  { code: 'en', name: 'English', flag: '🇺🇸' },
+  { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
+  { code: 'kn', name: 'ಕನ್ನಡ', flag: '🇮🇳' },
+  { code: 'ta', name: 'தமிழ்', flag: '🇮🇳' },
+  { code: 'te', name: 'తెలుగు', flag: '🇮🇳' },
+];
 
 const LanguageSwitcher = () => {
   const { i18n } = useTranslation();
+  const { isTranslating, currentLang, changeLanguage } = useTranslationContext();
   const [isOpen, setIsOpen] = useState(false);
 
-  const languages = [
-    { code: 'en', name: 'English', flag: '🇺🇸' },
-    { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
-    { code: 'kn', name: 'ಕನ್ನಡ', flag: '🇮🇳' },
-    { code: 'ta', name: 'தமிழ்', flag: '🇮🇳' },
-    { code: 'te', name: 'తెలుగు', flag: '🇮🇳' },
-  ];
+  const currentLanguage = LANGUAGES.find(l => l.code === currentLang) ?? LANGUAGES[0];
 
-  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
-
-  const changeLanguage = (lng) => {
-    i18n.changeLanguage(lng);
-    localStorage.setItem('i18nextLng', lng);
+  /* ── Change language ─────────────────────────────────────────────────── */
+  const handleChangeLanguage = async (code) => {
     setIsOpen(false);
+    await changeLanguage(code);
   };
 
-  useEffect(() => {
-    const savedLang = localStorage.getItem('i18nextLng');
-    if (savedLang && savedLang !== i18n.language) {
-      i18n.changeLanguage(savedLang);
-    }
-  }, [i18n]);
-
   return (
-    <div className="relative">
+    <div className="relative" translate="no" data-no-translate>
+      {/* Trigger button */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-green-100 hover:bg-green-200 transition-colors"
-        title={i18n.t('language')}
+        onClick={() => !isTranslating && setIsOpen(o => !o)}
+        aria-label="Change language"
+        className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-green-100 hover:bg-green-200 transition-colors disabled:opacity-60"
+        disabled={isTranslating}
       >
-        <FaLanguage className="text-green-600" />
-        <span className="text-sm font-medium text-green-800">
-          {currentLanguage.flag} {currentLanguage.name}
-        </span>
+        {isTranslating ? (
+          <span className="text-xs text-green-700 animate-pulse font-medium">Translating…</span>
+        ) : (
+          <>
+            <FaLanguage className="text-green-600" />
+            <span className="text-sm font-medium text-green-800">
+              {currentLanguage.flag} {currentLanguage.name}
+            </span>
+          </>
+        )}
       </button>
 
+      {/* Dropdown */}
       {isOpen && (
         <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-green-200 z-50">
-          {languages.map((lang) => (
+          {LANGUAGES.map(lang => (
             <button
               key={lang.code}
-              onClick={() => changeLanguage(lang.code)}
-              className={`w-full text-left px-4 py-2 text-sm hover:bg-green-50 transition-colors flex items-center space-x-2 ${i18n.language === lang.code ? 'bg-green-50 text-green-800 font-semibold' : 'text-gray-700'}`}
+              onClick={() => handleChangeLanguage(lang.code)}
+              className={`w-full text-left px-4 py-2 text-sm hover:bg-green-50 transition-colors
+                flex items-center space-x-2
+                ${currentLang === lang.code
+                  ? 'bg-green-50 text-green-800 font-semibold'
+                  : 'text-gray-700'}`}
+              disabled={isTranslating}
             >
               <span>{lang.flag}</span>
               <span>{lang.name}</span>
-              {i18n.language === lang.code && (
+              {currentLang === lang.code && (
                 <span className="ml-auto text-green-600">✓</span>
               )}
             </button>

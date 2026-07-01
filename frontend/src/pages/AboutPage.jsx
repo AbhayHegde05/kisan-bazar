@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+
 import {
   FaLeaf,
   FaUsers,
@@ -24,8 +26,9 @@ const AboutPage = () => {
         <div className="relative z-10 w-full">
           <div className="max-w-4xl mx-auto text-center px-4">
             <div className="inline-block bg-green-100 text-green-800 text-xs font-semibold rounded-full px-3 py-1 mb-6 shadow-sm border border-green-200">
-              <span className="uppercase tracking-wider">Our Story</span>
+              <span className="uppercase tracking-wider">{useTranslation().t("about_our_story", "Our Story")}</span>
             </div>
+
             <h1 className="text-4xl md:text-6xl font-extrabold mb-6 text-gray-900">
               About KisanBazar
             </h1>
