@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n/i18n';
 import { loadUser } from './redux/slices/authSlice';
@@ -12,7 +12,6 @@ import ConsumerRoute from './components/ConsumerRoute';
 import ScrollToTop from './components/ScrollToTop';
 import KisanBot from './components/KisanBot';
 import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 // Public Pages
 import HomePage from './pages/HomePage';
@@ -59,80 +58,78 @@ function App() {
   }, [dispatch]);
 
   return (
-    <Router>
-      <I18nextProvider i18n={i18n}>
-        <ErrorBoundary>
-          <ToastContainer
-            position="top-right"
-            autoClose={3000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="colored"
-          />
-          <ScrollToTop />
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<HomePage />} />
-              <Route path="about" element={<AboutPage />} />
-              <Route path="login" element={<LoginPage />} />
-              <Route path="register" element={<RegisterPage />} />
-              <Route path="farmers" element={<FarmersPage />} />
-              <Route path="farmers/:id" element={<FarmerDetailPage />} />
-              <Route path="products" element={<ProductsPage />} />
-              <Route path="products/:id" element={<ProductDetailPage />} />
+    <I18nextProvider i18n={i18n}>
+      <ErrorBoundary>
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+        />
+        <ScrollToTop />
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<HomePage />} />
+            <Route path="about" element={<AboutPage />} />
+            <Route path="login" element={<LoginPage />} />
+            <Route path="register" element={<RegisterPage />} />
+            <Route path="farmers" element={<FarmersPage />} />
+            <Route path="farmers/:id" element={<FarmerDetailPage />} />
+            <Route path="products" element={<ProductsPage />} />
+            <Route path="products/:id" element={<ProductDetailPage />} />
 
-              {/* Protected Routes */}
-              <Route element={<PrivateRoute />}>
-                <Route path="profile" element={<ProfilePage />} />
-                <Route path="messages" element={<MessagesPage />} />
-                <Route path="messages/:userId" element={<ConversationPage />} />
-                <Route path="orders" element={<OrdersPage />} />
-                <Route path="orders/:id" element={<OrderDetailPage />} />
-              </Route>
-
-              {/* Consumer Routes */}
-              <Route element={<ConsumerRoute />}>
-                <Route path="checkout" element={<CheckoutPage />} />
-              </Route>
-
-              {/* Farmer Routes */}
-              <Route element={<FarmerRoute />}>
-                <Route path="farmer/dashboard" element={<FarmerDashboardPage />} />
-                <Route path="farmer/products" element={<FarmerProductsPage />} />
-                <Route
-                  path="farmer/products/add"
-                  element={<FarmerAddProductPage />}
-                />
-                <Route
-                  path="farmer/products/edit/:id"
-                  element={<FarmerEditProductPage />}
-                />
-                <Route path="farmer/orders" element={<FarmerOrdersPage />} />
-                <Route path="farmer/profile" element={<FarmerProfilePage />} />
-                <Route path="farmer/resources" element={<FarmerResourcesPage />} />
-              </Route>
-
-              {/* Admin Routes */}
-              <Route element={<AdminRoute />}>
-                <Route path="admin/dashboard" element={<AdminDashboardPage />} />
-                <Route path="admin/users" element={<AdminUsersPage />} />
-                <Route path="admin/categories" element={<AdminCategoriesPage />} />
-                <Route path="admin/orders" element={<AdminOrdersPage />} />
-              </Route>
-
-              {/* 404 Route */}
-              <Route path="*" element={<NotFoundPage />} />
+            {/* Protected Routes */}
+            <Route element={<PrivateRoute />}>
+              <Route path="profile" element={<ProfilePage />} />
+              <Route path="messages" element={<MessagesPage />} />
+              <Route path="messages/:userId" element={<ConversationPage />} />
+              <Route path="orders" element={<OrdersPage />} />
+              <Route path="orders/:id" element={<OrderDetailPage />} />
             </Route>
-          </Routes>
-          <KisanBot />
-        </ErrorBoundary>
-      </I18nextProvider>
-    </Router>
+
+            {/* Consumer Routes */}
+            <Route element={<ConsumerRoute />}>
+              <Route path="checkout" element={<CheckoutPage />} />
+            </Route>
+
+            {/* Farmer Routes */}
+            <Route element={<FarmerRoute />}>
+              <Route path="farmer/dashboard" element={<FarmerDashboardPage />} />
+              <Route path="farmer/products" element={<FarmerProductsPage />} />
+              <Route
+                path="farmer/products/add"
+                element={<FarmerAddProductPage />}
+              />
+              <Route
+                path="farmer/products/edit/:id"
+                element={<FarmerEditProductPage />}
+              />
+              <Route path="farmer/orders" element={<FarmerOrdersPage />} />
+              <Route path="farmer/profile" element={<FarmerProfilePage />} />
+              <Route path="farmer/resources" element={<FarmerResourcesPage />} />
+            </Route>
+
+            {/* Admin Routes */}
+            <Route element={<AdminRoute />}>
+              <Route path="admin/dashboard" element={<AdminDashboardPage />} />
+              <Route path="admin/users" element={<AdminUsersPage />} />
+              <Route path="admin/categories" element={<AdminCategoriesPage />} />
+              <Route path="admin/orders" element={<AdminOrdersPage />} />
+            </Route>
+
+            {/* 404 Route */}
+            <Route path="*" element={<NotFoundPage />} />
+          </Route>
+        </Routes>
+        <KisanBot />
+      </ErrorBoundary>
+    </I18nextProvider>
   );
 }
 

@@ -5,9 +5,11 @@ import { useSelector } from "react-redux"
 import Loader from "./Loader"
 
 const Layout = () => {
-  const { loading: authLoading } = useSelector((state) => state.auth)
+  const { loading: authLoading, token } = useSelector((state) => state.auth)
 
-  if (authLoading) {
+  // Only show a full-screen loader when we have a token and are fetching user data
+  // Never block unauthenticated users from seeing the app
+  if (authLoading && token) {
     return <Loader />
   }
 
