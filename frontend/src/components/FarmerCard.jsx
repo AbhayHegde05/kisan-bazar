@@ -11,7 +11,7 @@ const FarmerCard = ({ farmer }) => {
       <div className="p-6">
         <div className="flex items-center space-x-4 mb-4">
           <div className="relative">
-            <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center overflow-hidden">
+            <div className="w-16 h-16 rounded-2xl bg-green-100 flex items-center justify-center overflow-hidden shadow-inner">
               {profile?.farmImages?.length > 0 ? (
                 <img src={profile.farmImages[0]} alt="Farm" className="w-full h-full object-cover" />
               ) : (
@@ -25,7 +25,7 @@ const FarmerCard = ({ farmer }) => {
             )}
           </div>
           <div>
-            <h3 className="text-xl font-semibold flex items-center">
+            <h3 className="text-xl font-black flex items-center text-slate-950">
               {farmer.name}
               {isTrusted && <FaShieldAlt className="text-blue-500 ml-2 text-sm" title="Trusted Farmer" />}
             </h3>
@@ -47,7 +47,7 @@ const FarmerCard = ({ farmer }) => {
 
         <Link
           to={`/farmers/${farmer._id}`}
-          className="block w-full bg-green-500 text-white text-center py-2 rounded-lg hover:bg-green-600 transition-colors"
+          className="block w-full bg-green-500 text-white text-center py-3 rounded-xl font-bold hover:bg-green-600 transition-colors"
         >
           View Farm
         </Link>

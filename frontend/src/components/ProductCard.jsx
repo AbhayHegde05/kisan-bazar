@@ -9,41 +9,39 @@ const ProductCard = ({ product }) => {
 
   return (
     <div className="card transition-transform duration-300">
-      <div className="relative h-48 overflow-hidden rounded-t-xl">
+      <div className="relative h-52 overflow-hidden rounded-t-[inherit]">
         {product.images && product.images.length > 0 ? (
           <img
             src={product.images[0]}
             alt={product.name}
             onError={handleImageError}
-            className="w-full h-56 object-cover"
+            className="h-full w-full object-cover transition duration-500 hover:scale-105"
           />
         ) : (
-          <div>
-            <img
-              src={placeholder}
-              alt="placeholder"
-              className="w-full h-56 object-cover"
-            />
-          </div>
+          <img
+            src={placeholder}
+            alt="placeholder"
+            className="h-full w-full object-cover"
+          />
         )}
         {product.isOrganic && (
-          <span className="absolute top-2 right-2 badge badge-green">
+          <span className="absolute right-3 top-3 badge badge-green shadow-sm">
             Organic
           </span>
         )}
       </div>
-      <div className="p-4">
-        <h3 className="text-lg font-semibold mb-1 truncate">{product.name}</h3>
-        <p className="text-gray-500 text-sm mb-2">
+      <div className="p-5">
+        <h3 className="mb-1 truncate text-lg font-black text-slate-950">{product.name}</h3>
+        <p className="mb-3 text-sm text-gray-500">
           {product.category?.name || "General"}
         </p>
-        <div className="flex justify-between items-center">
-          <span className="text-green-600 font-bold">
-            ₹{product.price.toFixed(2)} / {product.unit}
+        <div className="flex items-center justify-between gap-3">
+          <span className="font-black text-green-600">
+            Rs. {product.price.toFixed(2)} / {product.unit}
           </span>
           <Link
             to={`/products/${product._id}`}
-            className="text-sm text-green-500 hover:text-green-700 font-medium"
+            className="shrink-0 text-sm font-bold text-green-600 hover:text-green-800"
           >
             View Details
           </Link>

@@ -1,6 +1,13 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { translatePage, startPageTranslationObserver, stopPageTranslationObserver } from '../utils/pageTranslator';
+import { startPageTranslationObserver, stopPageTranslationObserver } from '../utils/pageTranslator';
+
+
+
+
+// Kept only to control DOM-fallback behavior if ever re-enabled
+const SAFE_TRANSLATE_LANGS = new Set(['hi','kn','ta','te']);
+
 
 
 
@@ -13,6 +20,10 @@ export const TranslationProvider = ({ children }) => {
     const { i18n } = useTranslation();
     const [isTranslating, setIsTranslating] = useState(false);
     const [currentLang, setCurrentLang] = useState('en');
+
+    // prevent stale DOM translations when switching back to English
+    const ORIGINAL_DOM_CACHE_KEY = 'kb_tr_original_dom_cleared';
+
     const [showMask, setShowMask] = useState(false);
 
     // Initialize session on mount
@@ -38,12 +49,14 @@ export const TranslationProvider = ({ children }) => {
                 setShowMask(true);
                 try {
                     // Translate whole DOM immediately (best coverage)
-                    await translatePage(savedLang);
+// DOM translation disabled for instant i18n switch
+                    // await translatePage(savedLang);
                 } finally {
                     setIsTranslating(false);
                     setShowMask(false);
                 }
-            }, 300);
+            }, 0);
+
 
             return () => {
                 clearTimeout(timer);
@@ -68,11 +81,14 @@ export const TranslationProvider = ({ children }) => {
             sessionStorage.setItem(SESSION_STORAGE_KEY, 'true');
             sessionStorage.setItem(SESSION_LANG_KEY, langCode);
 
-            // Translate whole DOM immediately for best coverage
-            // Avoid translating progressively; translate once and then stop DOM observer side-effects
-            await translatePage(langCode);
+            // Translate whole DOM only for non-English languages (prevents English text being overwritten)
+            if (SAFE_TRANSLATE_LANGS.has(langCode)) {
+// DOM translation disabled for instant i18n switch
+                // await translatePage(langCode);
+            }
             stopPageTranslationObserver();
             startPageTranslationObserver();
+
 
 
         } finally {
@@ -82,6 +98,10 @@ export const TranslationProvider = ({ children }) => {
     }, [currentLang, i18n]);
 
     const resetToEnglish = useCallback(async () => {
+        // clear stale DOM cache so English never shows translated text
+        try { localStorage.removeItem(ORIGINAL_DOM_CACHE_KEY); } catch (e) { console.warn(e); }
+
+
         if (currentLang === 'en') return;
 
         setIsTranslating(true);

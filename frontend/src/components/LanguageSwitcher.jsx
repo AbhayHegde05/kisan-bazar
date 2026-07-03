@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+
 import { FaLanguage } from 'react-icons/fa';
 import { useTranslationContext } from '../context/TranslationContext';
 
@@ -12,7 +12,7 @@ const LANGUAGES = [
 ];
 
 const LanguageSwitcher = () => {
-  const { i18n } = useTranslation();
+
   const { isTranslating, currentLang, changeLanguage } = useTranslationContext();
   const [isOpen, setIsOpen] = useState(false);
 

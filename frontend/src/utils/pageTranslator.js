@@ -58,8 +58,8 @@ const isTranslatable = (node) => {
     if (node.nodeType !== Node.TEXT_NODE) return false;
     const text = node.textContent.trim();
     if (text.length < 2) return false;
-    // Skip pure-numeric / symbol strings (prices etc. are kept unchanged by the LLM anyway,
-    // but no need to send them at all)
+
+    // Skip pure-numeric / symbol strings
     if (/^[\d\s.,₹$%+\-*/:()@]+$/.test(text)) return false;
 
     let el = node.parentElement;
@@ -77,7 +77,7 @@ const collectNodes = (root) => {
     const walker = document.createTreeWalker(
         root,
         NodeFilter.SHOW_TEXT,
-        { acceptNode: n => isTranslatable(n) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP },
+        { acceptNode: (n) => (isTranslatable(n) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP) },
     );
     let n;
     while ((n = walker.nextNode())) nodes.push(n);
@@ -102,14 +102,9 @@ const translateNodes = async (nodes, lang) => {
 
     if (lang === 'en') {
         // Restore English originals
-        nodes.forEach(node => {
+        nodes.forEach((node) => {
             const orig = originals.get(node);
-            if (orig !== undefined) {
-                node.textContent = orig;
-            }
-            // If we don't have an original stored, we can't restore it
-            // This will happen for nodes first encountered while language was English
-            // In that case, the node is already in English (its original state), so we leave it as is
+            if (orig !== undefined) node.textContent = orig;
         });
         return;
     }
@@ -117,12 +112,12 @@ const translateNodes = async (nodes, lang) => {
     // For non-English languages, we need to store originals before translating
     // Deduplicate: multiple nodes can share the same text
     const textToNodes = new Map();
-    nodes.forEach(node => {
-        // Store original text if we haven't seen this node before
+
+    nodes.forEach((node) => {
         if (!originals.has(node)) {
             originals.set(node, node.textContent);
         }
-        
+
         const text = node.textContent.trim();
         if (!textToNodes.has(text)) textToNodes.set(text, []);
         textToNodes.get(text).push(node);
@@ -131,11 +126,11 @@ const translateNodes = async (nodes, lang) => {
     const uniqueTexts = [...textToNodes.keys()];
     const uncached = [];
 
-    // Apply cached translations immediately (zero network wait)
+    // Apply cached translations immediately
     for (const text of uniqueTexts) {
         const cached = cacheGet(text, lang);
         if (cached) {
-            textToNodes.get(text).forEach(node => {
+            textToNodes.get(text).forEach((node) => {
                 if (!originals.has(node)) originals.set(node, node.textContent);
                 node.textContent = cached;
             });
@@ -153,7 +148,7 @@ const translateNodes = async (nodes, lang) => {
                 const translation = translations[j];
                 if (!translation) return;
                 cachePut(text, lang, translation);
-                (textToNodes.get(text) || []).forEach(node => {
+                (textToNodes.get(text) || []).forEach((node) => {
                     if (!originals.has(node)) originals.set(node, node.textContent);
                     node.textContent = translation;
                 });
@@ -173,12 +168,19 @@ const translateNodes = async (nodes, lang) => {
 export const translatePage = async (lang) => {
     currentLang = lang;
     const nodes = collectNodes(document.body);
+
+    // If switching to English, deterministically restore originals.
+    if (lang === 'en') {
+        pendingNodes.clear();
+        await translateNodes(nodes, 'en');
+        return;
+    }
+
     await translateNodes(nodes, lang);
 };
 
 /**
  * Start watching for new DOM nodes (React route changes, lazy loads, etc.)
- * and translate them automatically.  Call this once on app mount.
  */
 export const startPageTranslationObserver = () => {
     if (domObserver) domObserver.disconnect();
@@ -191,14 +193,13 @@ export const startPageTranslationObserver = () => {
                 if (added.nodeType === Node.TEXT_NODE) {
                     if (isTranslatable(added)) pendingNodes.add(added);
                 } else if (added.nodeType === Node.ELEMENT_NODE) {
-                    collectNodes(added).forEach(n => pendingNodes.add(n));
+                    collectNodes(added).forEach((n) => pendingNodes.add(n));
                 }
             }
         }
 
         if (pendingNodes.size > 0) {
             clearTimeout(debounceTimer);
-            // Short delay so React finishes flushing the render before we walk the tree
             debounceTimer = setTimeout(async () => {
                 const toTranslate = [...pendingNodes];
                 pendingNodes.clear();
@@ -211,9 +212,13 @@ export const startPageTranslationObserver = () => {
 };
 
 /**
- * Stop the observer (call on unmount / cleanup if needed).
+ * Stop the observer.
  */
 export const stopPageTranslationObserver = () => {
     clearTimeout(debounceTimer);
-    if (domObserver) { domObserver.disconnect(); domObserver = null; }
+    if (domObserver) {
+        domObserver.disconnect();
+        domObserver = null;
+    }
 };
+

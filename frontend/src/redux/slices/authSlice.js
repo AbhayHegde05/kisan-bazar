@@ -91,7 +91,6 @@ export const loadUser = createAsyncThunk(
       };
 
       const { data } = await axios.get(`${API_URL}/auth/me`, config);
-
       return data;
     } catch (error) {
       const message =
@@ -124,7 +123,46 @@ export const updateProfile = createAsyncThunk(
       );
 
       localStorage.setItem("user", JSON.stringify(data.data));
+      return data;
+    } catch (error) {
+      const message =
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message;
+      return rejectWithValue(message);
+    }
+  }
+);
 
+// Request password reset
+export const requestPasswordReset = createAsyncThunk(
+  "auth/forgot-password",
+  async ({ email }, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.post(`${API_URL}/auth/forgot-password`, {
+        email,
+      }, { headers: { "Content-Type": "application/json" } });
+      return data;
+    } catch (error) {
+      const message =
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message;
+      return rejectWithValue(message);
+    }
+  }
+);
+
+// Reset password
+export const resetPassword = createAsyncThunk(
+  "auth/reset-password",
+  async ({ token, password }, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.post(
+        `${API_URL}/auth/reset-password`,
+        { token, password },
+        { headers: { "Content-Type": "application/json" } }
+      );
       return data;
     } catch (error) {
       const message =
@@ -175,9 +213,10 @@ const authSlice = createSlice({
       })
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
-        toast.error(action.payload);
+        state.error = action?.payload || "Registration failed";
+        toast.error(action?.payload || "Registration failed");
       })
+
       // Login
       .addCase(login.pending, (state) => {
         state.loading = true;
@@ -195,6 +234,7 @@ const authSlice = createSlice({
         state.error = action.payload;
         toast.error(action.payload);
       })
+
       // Load User
       .addCase(loadUser.pending, (state) => {
         state.loading = true;
@@ -205,12 +245,45 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
         state.user = action.payload.user;
       })
-      .addCase(loadUser.rejected, (state, action) => {
+.addCase(loadUser.rejected, (state) => {
         state.loading = false;
         state.isAuthenticated = false;
         state.token = null;
         state.user = null;
       })
+
+      // Request password reset
+      .addCase(requestPasswordReset.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(requestPasswordReset.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        toast.success(action?.payload?.message || "Reset link sent");
+      })
+      .addCase(requestPasswordReset.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action?.payload || "Password reset request failed";
+        toast.error(action?.payload || "Password reset request failed");
+      })
+
+      // Reset password
+      .addCase(resetPassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(resetPassword.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        toast.success(action?.payload?.message || "Password updated successfully");
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action?.payload || "Password reset failed";
+        toast.error(action?.payload || "Password reset failed");
+      })
+
       // Update Profile
       .addCase(updateProfile.pending, (state) => {
         state.loading = true;
@@ -226,6 +299,7 @@ const authSlice = createSlice({
         state.error = action.payload;
         toast.error(action.payload);
       })
+
       // Logout
       .addCase(logout.fulfilled, (state) => {
         state.token = null;
@@ -237,5 +311,5 @@ const authSlice = createSlice({
 });
 
 export const { clearError } = authSlice.actions;
-
 export default authSlice.reducer;
+

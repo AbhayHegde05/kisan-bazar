@@ -1,0 +1,13 @@
+# Dependencies
+node_modules
+
+# Env / secrets
+.env
+
+# VCS
+.git
+.gitignore
+
+# Logs
+npm-debug.log
+

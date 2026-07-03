@@ -147,6 +147,86 @@ exports.getMe = async (req, res) => {
   }
 };
 
+// @desc    Request password reset
+// @route   POST /api/auth/forgot-password
+// @access  Public
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Email is required" });
+    }
+
+    const user = await User.findOne({ email });
+    // Always respond with success to avoid user enumeration
+    if (!user) {
+      return res.json({ success: true, message: "If the email exists, a reset link has been sent" });
+    }
+
+    const crypto = require("crypto");
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const resetExpires = Date.now() + 30 * 60 * 1000; // 30 minutes
+
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = resetExpires;
+    await user.save({ validateBeforeSave: false });
+
+    const resetUrl = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
+
+    const { sendEmail } = require("../utils/sendEmail");
+    await sendEmail({
+      to: user.email,
+      subject: "KisanBazar password reset",
+      text: `You requested a password reset.\n\nReset link: ${resetUrl}\n\nThis link expires in 30 minutes.`,
+      html: `<p>You requested a password reset.</p><p>Reset link: <a href="${resetUrl}">${resetUrl}</a></p><p>This link expires in 30 minutes.</p>`,
+    });
+
+    return res.json({ success: true, message: "Reset link sent" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: "Server error", error: error.message });
+  }
+};
+
+// @desc    Reset password
+// @route   POST /api/auth/reset-password
+// @access  Public
+exports.resetPassword = async (req, res) => {
+  try {
+    const { token, password } = req.body;
+
+    if (!token || !password) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Token and new password are required" });
+    }
+
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid or expired reset token" });
+    }
+
+    user.password = password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+
+    await user.save();
+
+    return res.json({ success: true, message: "Password updated successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: "Server error", error: error.message });
+  }
+};
+
 // @desc    Google OAuth Login
 // @route   POST /api/auth/google-login
 // @access  Public

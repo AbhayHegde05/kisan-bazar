@@ -20,6 +20,8 @@ import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import FarmersPage from './pages/FarmersPage';
 import FarmerDetailPage from './pages/FarmerDetailPage';
 import ProductsPage from './pages/ProductsPage';
@@ -61,6 +63,7 @@ function App() {
 
   return (
     <I18nextProvider i18n={i18n}>
+      {/* Keep IntroScreen out of the main bundle; its 3D dependency can block app mount. */}
       <TranslationProvider>
         <ErrorBoundary>
           <ToastContainer
@@ -77,10 +80,12 @@ function App() {
           />
           <ScrollToTop />
           <Routes>
-            <Route path="/" element={<Layout />}>
+              <Route path="/" element={<Layout />}>
               <Route index element={<HomePage />} />
               <Route path="about" element={<AboutPage />} />
               <Route path="login" element={<LoginPage />} />
+              <Route path="forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="reset-password" element={<ResetPasswordPage />} />
               <Route path="register" element={<RegisterPage />} />
               <Route path="farmers" element={<FarmersPage />} />
               <Route path="farmers/:id" element={<FarmerDetailPage />} />

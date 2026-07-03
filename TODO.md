@@ -1,27 +1,18 @@
-# TODO - kisan-bazar fixes
+# TODO - KisanBazar fixes
 
-## 1) Instant translations (remove DOM “line-by-line” behavior)
-- [x] Update `frontend/src/context/TranslationContext.jsx` to stop calling `translatePage()` on language change (instant i18next update)
-- [ ] Disable DOM text translator usage for core UI (keep only as fallback if needed)
+## Translation (instant + complete)
+- [ ] Convert `AboutPage.jsx` all hard-coded text to `t()` keys (add missing keys to `frontend/public/locales/*/translation.json`).
+- [ ] Ensure all pages/components use `t()` (no raw text nodes left behind).
+- [ ] Remove/disable DOM MutationObserver translation fallback if react-i18next covers everything (prevents mixed-language delays).
+- [ ] Update `LanguageSwitcher` / `TranslationContext` to switch language instantly (no setTimeout delay, no per-node translation).
 
+## Message voice
+- [ ] Implement read-aloud on `frontend/src/components/MessageItem.jsx` volume icon using Web Speech API (speechSynthesis).
 
-## 2) Coverage: About + Footer should translate via i18next keys (not raw English)
-- [ ] Update `frontend/src/pages/AboutPage.jsx` to use `t()` for all visible English strings
-- [ ] Update `frontend/src/components/Footer.jsx` to use `t()` for all visible English strings
-- [ ] Add missing translation keys to `frontend/public/locales/{en,hi,kn,ta,te}/translation.json`
+## Google OAuth
+- [ ] Verify existing Google OAuth components (e.g. `GoogleAuthButton.jsx`, `GoogleRoleGate.jsx`).
+- [ ] If missing, add backend OAuth route + controller, and frontend login flow.
 
-## 3) Message voice (volume icon)
-- [ ] Locate component that renders message volume icon
-- [ ] Wire Web Speech API speech synthesis to play message content in selected language
-
-## 4) Google OAuth login
-- [ ] Add “Continue with Google” button + handler in `frontend/src/pages/LoginPage.jsx`
-- [ ] Add a new Redux thunk in `frontend/src/redux/slices/authSlice.js` to call `/auth/google-login`
-- [ ] Verify backend route `/api/auth/google-login` usage
-
-## 5) Smoke tests
-- [ ] Verify language switching updates instantly on navigation without delays
-- [ ] Verify About page translates fully for non-English
-- [ ] Verify message voice plays aloud
-- [ ] Verify Google OAuth login works end-to-end
+## Quality checks
+- [ ] Run `frontend` lint and build after each major translation change.
 

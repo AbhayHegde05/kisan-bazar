@@ -63,12 +63,13 @@ const Footer = () => {
               </li>
               <li className="flex items-center gap-3">
                 <FaPhone className="text-green-400" />
-                <span>03241441444</span>
+                <span>8792117628</span>
               </li>
               <li className="flex items-center gap-3">
                 <FaEnvelope className="text-green-400" />
-                <span>info@freshharvestconnect.com</span>
+                <span>abhayhegde.05@gmail.com</span>
               </li>
+
             </ul>
           </div>
 
