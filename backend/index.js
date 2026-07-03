@@ -34,9 +34,15 @@ app.use(express.urlencoded({ extended: true }));
 
 
 // Routes
+// Keep-alive route (Render free tier) - must be registered before DB-dependent routes/middleware
+app.get("/ping", (req, res) => {
+  return res.status(200).send("Server is awake");
+});
+
 app.get("/", (req, res) => {
   res.send("KisanBazar API is running");
 });
+
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
